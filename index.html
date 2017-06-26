@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximun-scale=1.0, user-scalable=no"/>
+    
+    <title>Web-Map RCA</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css">  
+    <link rel="stylesheet" href="lib/styles_prueba.css" />
+    
+    <link rel="stylesheet" href="lib/leaflet-measure.css" />
+    <link rel="stylesheet" href="lib/leaflet.draw.css" />
+
+    <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js"></script>
+	   
+    <link rel="stylesheet" href="lib/src/leaflet.draw.css" />
+    
+    
+    <script src="data/RoutPral.js"></script>
+    <script src="data/Riviere.js"></script>
+    <script src="data/Conserv.js"></script>
+    <script src="data/Protect.js"></script>    
+    <script src="data/Adm_4.js"></script>
+    <script src="data/Adm_3.js"></script>
+    <script src="data/Adm_2.js"></script>
+    <script src="data/Adm_1.js"></script>
+    
+    <script src="caff.csv"></script>
+    <script src="data/IDP.csv"></script>
+    <script src="data/ChefLieu.csv"></script>
+    <script src="data/ChefSous.csv"></script>
+    <script src="data/Villes.csv"></script>
+    <script src="data/aerodrome.csv"></script>
+    <script src="data/Eco.csv"></script>
+    <script src="data/Forages.csv"></script>
+    <script src="data/Puits.csv"></script>
+    <script src="data/Source.csv"></script>
+    
+<!--........... Añadir el control de apertura de ficheros KMZ ........-->
+
+    <script type="text/javascript">
+        var abrir=0;
+		function KMZ(){
+            var style = {
+            weight: 1,
+            opacity: 0.7,
+            color: 'gray',
+            fillOpacity: 0.5,
+            fillColor:'red',
+            clickable: false
+        };
+        L.Control.FileLayerLoad.LABEL = '<img class="icon" src="images/open-folder-icon.png" >';
+		if(abrir==0){
+        L.Control.fileLayerLoad({
+            fitBounds: true,
+            layerOptions: {
+                style: style,
+                pointToLayer: function (data, latlng) {
+                    return L.circleMarker(
+                    latlng,
+                    { style: style }
+                    );
+                }
+            }
+        }).addTo(map);
+		abrir=1;
+        }else{
+		    alert("Cliquez sur le bouton avec un dossier sur le côté gauche de la carte");
+        }
+        }
+    </script>
+      
+<!--.......... Añadir control para dibujar... ........ .........-->
+    
+    <script type="text/javascript"> 
+        var abrir2=0;
+		function draw(){
+         if(abrir2==0){   
+			new L.Control.Draw({
+                edit: {
+                    featureGroup: drawnItems,
+                }
+            }).addTo(map);
+		
+            map.on(L.Draw.Event.CREATED, function(event) {
+            var layer = event.layer;
+    
+            drawnItems.addLayer(layer).addTo(map);
+            });
+		abrir2=1;
+        }else{
+		    alert("Les boutons pour desinner sont activés sur le côté gauche de la carte");
+        }
+		}
+    </script>
+
+ <!--.......... Añadir control para medir distancias y áreas ....................-->
+    
+    <script type="text/javascript"> 
+        var abrir3=0;
+		function measure(){
+		if(abrir3==0){  
+            var measureControl = new L.Control.Measure();
+            measureControl.addTo(map);
+        abrir3=1;
+        }else{
+		    alert("Le bouton pour réaliser une mesure est sur le côté droit de la carte");
+        }
+		}
+    </script>   
+    
+    
+ <!--.......... Añadir control Buscar Prefectura ....................-->
+    
+    <script type="text/javascript"> 
+        var abrir4=0;
+		function Pref(){
+		if(abrir4==0){
+        new L.Control.Search({
+            layer: adm1,
+            initial: false,
+            propertyName: 'admin1Name',
+            buildTip: function(text, val) {
+            var type = val.layer.feature.properties.admin1Name;
+            return '<a href="#" class="'+type+'">'+text+'</b></a>';
+            }
+        }).addTo(map);
+		abrir4=1;
+        }else{
+		    alert("Cliquez sur le bouton avec un dossier sur le côté gauche de la carte");
+        }
+        }
+    </script>  
+    
+  <!--.......... Añadir control Buscar Sous Prefectura ....................-->
+    
+    <script type="text/javascript"> 
+        var abrir5=0;
+		function SPref(){
+		if(abrir5==0){
+        new L.Control.Search({
+            layer: adm2,
+            initial: false,
+            propertyName: 'admin2Name',
+            buildTip: function(text, val) {
+            var type = val.layer.feature.properties.admin2Name;
+            return '<a href="#" class="'+type+'">'+text+'</b></a>';
+            }
+        }).addTo(map);
+		abrir5=1;
+        }else{
+		    alert("Cliquez sur le bouton avec un dossier sur le côté gauche de la carte");
+        }
+        }
+    </script>  
+
+ <!--.......... Añadir control Buscar Commune ....................-->
+    
+    <script type="text/javascript"> 
+		var abrir6=0;
+		function Com(){
+		if(abrir6==0){
+        new L.Control.Search({
+            layer: adm3,
+            initial: false,
+            propertyName: 'admin3Name',
+            buildTip: function(text, val) {
+            var type = val.layer.feature.properties.admin3Name;
+            return '<a href="#" class="'+type+'">'+text+'</b></a>';
+            }
+        }).addTo(map);
+		abrir6=1;
+        }else{
+		    alert("Cliquez sur le bouton avec un dossier sur le côté gauche de la carte");
+        }
+        }
+    </script>      
+    
+    <link rel="stylesheet" href="lib/leaflet-search.css" />
+      
+</head>
+
+
+<body>
+    <h1>Visualiseur Cartographique - République Centrafricaine </h1>  
+    
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>	  
+    <script src="https://unpkg.com/togeojson@0.14.2"></script>
+                  
+    <script type="text/javascript" src="lib/leaflet.filelayer.js"></script>
+    <script type="text/javascript" src="lib/leaflet-measure.js"></script>
+    <script type="text/javascript" src="lib/leaflet-search.js"></script>
+    <script type="text/javascript" src="lib/MousePosition.js"></script>
+    <script type="text/javascript" src="lib/leaflet.easyPrint.js"></script>
+    <script type="text/javascript" src="lib/leaflet-omnivore.js"></script>
+        
+    <script src="lib/src/Leaflet.draw.js"></script>
+    <script src="lib/src/Leaflet.Draw.Event.js"></script>
+    <script src="lib/src/Leaflet.Draw.Event.js"></script>
+    <script src="lib/src/Toolbar.js"></script>
+    <script src="lib/src/Tooltip.js"></script>
+
+    <script src="lib/src/ext/GeometryUtil.js"></script>
+    <script src="lib/src/ext/LatLngUtil.js"></script>
+    <script src="lib/src/ext/LineUtil.Intersect.js"></script>
+    <script src="lib/src/ext/Polygon.Intersect.js"></script>
+    <script src="lib/src/ext/Polyline.Intersect.js"></script>
+    <script src="lib/src/ext/TouchEvents.js"></script>
+
+    <script src="lib/src/draw/DrawToolbar.js"></script>
+    <script src="lib/src/draw/handler/Draw.Feature.js"></script>
+    <script src="lib/src/draw/handler/Draw.SimpleShape.js"></script>
+    <script src="lib/src/draw/handler/Draw.Polyline.js"></script>
+    <script src="lib/src/draw/handler/Draw.Circle.js"></script>
+    <script src="lib/src/draw/handler/Draw.Marker.js"></script>
+    <script src="lib/src/draw/handler/Draw.Polygon.js"></script>
+    <script src="lib/src/draw/handler/Draw.Rectangle.js"></script>
+
+    <script src="lib/src/edit/EditToolbar.js"></script>
+    <script src="lib/src/edit/handler/EditToolbar.Edit.js"></script>
+    <script src="lib/src/edit/handler/EditToolbar.Delete.js"></script>
+
+    <script src="lib/src/Control.Draw.js"></script>
+
+    <script src="lib/src/edit/handler/Edit.Poly.js"></script>
+    <script src="lib/src/edit/handler/Edit.SimpleShape.js"></script>
+    <script src="lib/src/edit/handler/Edit.Circle.js"></script>
+    <script src="lib/src/edit/handler/Edit.Rectangle.js"></script>
+    <script src="lib/src/edit/handler/Edit.Marker.js"></script>        
+    
+    <div id="menu" style="position:relative; z-index:999">
+        <nav>
+			<ul >
+				<li><a href="javascript:measure()">Réaliser une mesure</a></li>
+                <li><a href="javascript:draw()">Desinner</a></li>
+				<li><a href="">Chercher un/e ...</a>
+					<ul>
+						<li><a href="javascript:Pref()">Préfecture</a></li>
+						<li><a href="javascript:SPref()">Spréfecture</a></li>
+						<li><a href="javascript:Com()">Commune</a></li>
+					</ul>
+				</li>
+				<li><a href="javascript:KMZ()">Importer KMZ</a></li>
+                <li><a href="javascript:print()">Exporter PDF</a></li>
+				<li><a href="info.html">Information</a></li> 
+                <div style=" font-size:12px; text-align:right; padding-top:5px; 
+				padding-right:5px; color: #FCA338">Dèrniere actualisation June 2017</div> 
+			</ul>
+           
+        </nav>
+    </div>
+   
+    <div id="map" class="map map-home" style=" margin:5px 5px 5px 5px;height:520px"></div>
+    
+    <script type="text/javascript" src="BaseMapa.js"></script>
+
+    <div style="margin: 5px; float: left; width: 90%; font-family: arial narrow">Sources des données et des limites administratives: OCHA. Les données, désignations ou frontiéres utilisés dans cette aplication ne sont pas garanties sans erreur et n´impliquent en aucun cas la responsabilité ni l´approbation des partenaires ou organisations associées.</div><div style="margin-right: 5px; float: right; text-align:right"><img src="lib/flag.png" width="70" height="50"></div>
+   
+    <script type="text/javascript" src="print.js"></script> 
+
+ </body>
+</html>
